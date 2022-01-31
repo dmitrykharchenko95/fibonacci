@@ -2,7 +2,6 @@ build:
 	go build -v -o ./bin/fibonacci ./cmd/fibonacci
 
 run: build
-	redis-server --port 6379
 	./bin/fibonacci
 
 test:
