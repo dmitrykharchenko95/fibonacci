@@ -2,11 +2,25 @@ package service
 
 import (
 	"context"
+	"net"
 	"reflect"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/dmitrykharchenko95/fibonacci/internal/rds"
+	"github.com/go-redis/redis/v8"
 )
+
+var rdb = &rds.Client{
+	Cl: redis.NewClient(&redis.Options{
+		Addr:     net.JoinHostPort("localhost", "6379"),
+		Password: "",
+		DB:       0,
+	}),
+	Expiration: time.Hour,
+	MaxErrors:  6,
+}
 
 func Test_fibonacci(t *testing.T) {
 	type args struct {
@@ -81,6 +95,7 @@ func Test_fibonacci(t *testing.T) {
 }
 
 func Test_getFibonacci(t *testing.T) {
+
 	type args struct {
 		x       int
 		y       int
@@ -135,7 +150,7 @@ func Test_getFibonacci(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetFibonacci(tt.args.x, tt.args.y, tt.args.timeout, nil)
+			got, err := GetFibonacci(tt.args.x, tt.args.y, tt.args.timeout, rdb)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetFibonacci() error = %v, wantErr %v", err, tt.wantErr)
 				return
