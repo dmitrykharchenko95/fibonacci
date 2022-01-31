@@ -1,0 +1,18 @@
+{
+  "HTTP": {
+    "Host": "localhost",
+    "Port": "8080",
+    "Timeout": "10s"
+  },
+  "GRPC": {
+    "Host": "localhost",
+    "Port": "50052",
+    "Timeout": "10s"
+  },
+  "Redis": {
+    "Host": "localhost",
+    "Port": "6379",
+    "Expiration": "12h",
+    "MaxErrors": 6
+  }
+}

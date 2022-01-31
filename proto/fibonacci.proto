@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "./internal/server/grpc/pb;pb";
+
+message request {
+  int64 x = 1;
+  int64 y = 2;
+}
+
+message response {
+  repeated int64 data = 1;
+  string err = 2;
+}
+
+service fibonacci {
+  rpc getFibonacci (request) returns (response) {}
+}
