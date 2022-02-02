@@ -4,9 +4,20 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89a99f65-e0f9-41ba-bfc5-afbc6dad8c62" name="Changes" comment="">
+    <list default="true" id="89a99f65-e0f9-41ba-bfc5-afbc6dad8c62" name="Changes" comment="oops: tests">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/fibonacci/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/fibonacci/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/fibonacci/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/fibonacci/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/fibonacci_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/configs/fibonacci_config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/server/grpc/pb/fibonacci.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/server/grpc/pb/fibonacci.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/server/http/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/server/http/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/server/http/server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/server/http/server_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/fibonacci.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/service/fibonacci.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/fibonacci_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/service/fibonacci_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/fibonacci.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/fibonacci.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +61,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../note_service_rest" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -58,20 +69,8 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestServer in github.com/dmitrykharchenko95/fibonacci/internal/server/http">
-    <configuration name="TestNewConfig/base in github.com/dmitrykharchenko95/fibonacci/config" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="fibonacci" />
-      <working_directory value="$PROJECT_DIR$/config" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/dmitrykharchenko95/fibonacci/config" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestNewConfig\E$/^\Qbase\E$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestServer in github.com/dmitrykharchenko95/fibonacci/internal/server/http" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Makefile Target.docker-compose-up">
+    <configuration name="TestServer/1,1 in github.com/dmitrykharchenko95/fibonacci/internal/server/http" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="fibonacci" />
       <working_directory value="$PROJECT_DIR$/internal/server/http" />
       <root_directory value="$PROJECT_DIR$" />
@@ -80,31 +79,19 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <pattern value="^\QTestServer\E$" />
+      <pattern value="^\QTestServer\E$/^\Q1,1\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestServer/0,10 in github.com/dmitrykharchenko95/fibonacci/internal/server/http" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="fibonacci" />
-      <working_directory value="$PROJECT_DIR$/internal/server/http" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/dmitrykharchenko95/fibonacci/internal/server/http" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestServer\E$/^\Q0,10\E$" />
+    <configuration name="build" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="build" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
       <method v="2" />
     </configuration>
-    <configuration name="Test_fibonacci in github.com/dmitrykharchenko95/fibonacci/internal/service" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="fibonacci" />
-      <working_directory value="$PROJECT_DIR$/internal/service" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/dmitrykharchenko95/fibonacci/internal/service" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTest_fibonacci\E$" />
+    <configuration name="docker-compose-up" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="docker-compose-up" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
       <method v="2" />
     </configuration>
     <configuration name="run" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
@@ -113,13 +100,19 @@
       </makefile>
       <method v="2" />
     </configuration>
+    <configuration name="test" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="test" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Test.TestServer in github.com/dmitrykharchenko95/fibonacci/internal/server/http" />
-        <item itemvalue="Go Test.TestServer/0,10 in github.com/dmitrykharchenko95/fibonacci/internal/server/http" />
-        <item itemvalue="Go Test.Test_fibonacci in github.com/dmitrykharchenko95/fibonacci/internal/service" />
-        <item itemvalue="Go Test.TestNewConfig/base in github.com/dmitrykharchenko95/fibonacci/config" />
+        <item itemvalue="Makefile Target.docker-compose-up" />
         <item itemvalue="Makefile Target.run" />
+        <item itemvalue="Makefile Target.test" />
+        <item itemvalue="Makefile Target.build" />
+        <item itemvalue="Go Test.TestServer/1,1 in github.com/dmitrykharchenko95/fibonacci/internal/server/http" />
       </list>
     </recent_temporary>
   </component>
@@ -137,18 +130,14 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="oops" />
+    <MESSAGE value="oops: tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="oops: tests" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/fibonacci/version.go</url>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

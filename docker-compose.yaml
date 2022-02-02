@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: ./
+    command: ./bin/fibonacci
+    ports:
+      - "8080:8080"
+      - "50052:50052"
+    volumes:
+      - ./configs:/usr/src/fibonacci/configs
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"

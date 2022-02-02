@@ -5,8 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strconv"
-	"sync"
+	"math/big"
 	"time"
 
 	rds "github.com/dmitrykharchenko95/fibonacci/internal/rds"
@@ -15,56 +14,67 @@ import (
 
 var (
 	ErrTimeoutExit = errors.New("timeout exit")
+	redisAtWork    = 0
+	UseRedis       = true
 )
 
-// GetFibonacci при успешном завершении возвращает срез чисел Фибоначчи с порядковыми номерами от x до y и ошибку nil.
-// Через аргумент timeout передается максимальное время работы функции. После истечения timeout функция вернет срез
-// чисел Фибоначчи, которые успела вычислить, и ошибку вида "timeout exit: returned <N> values from <M>", где
+// GetFibonacci при успешном завершении возвращает срез чисел Фибоначчи, форматированных в строки, с порядковыми
+// номерами от x до y и ошибку nil.Через аргумент timeout передается максимальное время работы функции. После истечения
+// timeout функция вернет срез чисел Фибоначчи, которые успела вычислить, и ошибку вида
+// "timeout exit: returned <N> values from <M>", где
 // N - количество вычисленных чисел Фибоначчи;
 // M - ожидаемое количество чисел Фибоначчи.
 // При возникновении maxRedisErrors ошибок в работе Redis GetFibonacci производит вычисление каждого значения через
 // функцию fibonacci
-func GetFibonacci(x, y int, timeout time.Duration, rdb *rds.Client) ([]int64, error) {
+func GetFibonacci(x, y int, timeout time.Duration, rdb *rds.Client) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	var (
-		res         = make([]int64, 0, y-x)
-		stopCh      = make(chan struct{})
-		redisAtWork = 0
+		res    = make([]string, 0, y-x)
+		stopCh = make(chan struct{})
 	)
 
 	for i := x; i <= y; i++ {
-		var once sync.Once
-		var num int
+		I := big.NewInt(int64(i))
+		var num = new(big.Int)
 
-		if redisAtWork <= rdb.MaxErrors {
-			val, err := rdb.Cl.Get(ctx, strconv.Itoa(i)).Result()
+		if UseRedis && rdb.MaxErrors != 0 {
+			val, err := rdb.Cl.Get(ctx, I.Text(10)).Result()
 			switch {
 			case errors.Is(err, redis.Nil):
-				num = fibonacci(ctx, i, stopCh, &once)
-				err = rdb.Cl.Set(ctx, strconv.Itoa(i), strconv.Itoa(num), rdb.Expiration).Err()
+				num = fibonacci(ctx, I, stopCh)
+				err = rdb.Cl.Set(ctx, I.Text(10), num.Text(10), rdb.Expiration).Err()
 				if err != nil {
 					redisAtWork += 1
-					log.Printf("Redis Set error #%v: %v\n", redisAtWork, err)
+					if redisAtWork >= rdb.MaxErrors {
+						UseRedis = false
+						log.Println("Redis disabled")
+					}
+					log.Printf("Redis Set error #%v: %v\n", redisAtWork+1, err)
 				} /*else { 							// раскомментировать для логирования при добавлении значения в Redis
 					log.Printf("val %v with key %v set in Redis", num, i)
 				}*/
 			case err != nil:
-				log.Printf("Redis Get error #%v: %v\n", redisAtWork, err)
+				log.Printf("Redis Get error #%v: %v\n", redisAtWork+1, err)
 				redisAtWork += 1
-				num = fibonacci(ctx, i, stopCh, &once)
+				if redisAtWork >= rdb.MaxErrors {
+					UseRedis = false
+					log.Println("Redis disabled")
+				}
+				num = fibonacci(ctx, I, stopCh)
 			default:
-				num, err = strconv.Atoi(val)
-				if err != nil {
-					log.Printf("wrong value with key '%v' in Redis: %v\n", val, err)
-					num = fibonacci(ctx, i, stopCh, &once)
+				ok := true
+				num, ok = num.SetString(val, 10)
+				if !ok {
+					log.Printf("wrong value with key '%v' in Redis\n", I.Text(10))
+					num = fibonacci(ctx, I, stopCh)
 				} /*else {							// раскомментировать для логирования при получении значения из Redis
 					log.Printf("val %v with key %v got from Redis", num, i)
 				}*/
 			}
 		} else {
-			num = fibonacci(ctx, i, stopCh, &once)
+			num = fibonacci(ctx, I, stopCh)
 		}
 
 		select {
@@ -72,32 +82,48 @@ func GetFibonacci(x, y int, timeout time.Duration, rdb *rds.Client) ([]int64, er
 			log.Printf("timeout exit: returned %v values from %v\n", len(res), y-x+1)
 			return res, fmt.Errorf("%w: returned %v values from %v", ErrTimeoutExit, len(res), y-x+1)
 		default:
-			res = append(res, int64(num))
+			res = append(res, num.Text(10))
 		}
 	}
 	return res, nil
 }
 
 // fibonacci вычисляет число Фибоначчи под порядковым номером n. Выполнение функции fibonacci можно прервать через
-// ctx. При преждевременном завершении функции через ctx закрывается сигнальный канал stopCh. Аргумент once передается
-// для возможности корректного преждевременного завершения функции и закрытия канала stopCh.
-func fibonacci(ctx context.Context, n int, stopCh chan struct{}, once *sync.Once) int {
-	select {
-	case <-ctx.Done():
-		once.Do(func() {
-			close(stopCh)
-		})
-		return 0
+// ctx. При преждевременном завершении функции через ctx закрывается сигнальный канал stopCh.
+func fibonacci(ctx context.Context, n *big.Int, stopCh chan struct{}) *big.Int {
+	negative := false
+
+	f2 := big.NewInt(0)
+	f1 := big.NewInt(1)
+
+	if n.Sign() < 0 {
+		n.Mul(n, big.NewInt(-1))
+		negative = true
+	}
+
+	switch {
+	case n.Cmp(big.NewInt(0)) == 0:
+		return f2
+	case n.CmpAbs(big.NewInt(1)) == 0:
+		return f1
 	default:
-		switch {
-		case n == 0:
-			return 0
-		case n == 1 || n == -1:
-			return 1
-		case n < 0:
-			return fibonacci(ctx, n+2, stopCh, once) - fibonacci(ctx, n+1, stopCh, once)
-		default:
-			return fibonacci(ctx, n-1, stopCh, once) + fibonacci(ctx, n-2, stopCh, once)
+		for i := 2; n.Cmp(big.NewInt(int64(i))) >= 0; i++ {
+			select {
+			case <-ctx.Done():
+				close(stopCh)
+				return f1
+			default:
+				next := big.NewInt(0)
+				next.Add(f2, f1)
+				f2 = f1
+				f1 = next
+			}
 		}
 	}
+
+	if negative && big.NewInt(0).Rem(n, big.NewInt(2)).Sign() == 0 {
+		f1 = f1.Mul(f1, big.NewInt(-1))
+	}
+
+	return f1
 }
