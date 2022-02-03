@@ -16,7 +16,7 @@ import (
 var ErrWrongArgs = errors.New("request's body should has two int values through a comma")
 
 type Response struct {
-	Data []int64
+	Data []string
 	Err  string
 }
 
@@ -71,7 +71,7 @@ func (s *Server) getFib(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := &Response{
-		Data: make([]int64, 0),
+		Data: make([]string, 0),
 	}
 
 	if r.Method != http.MethodGet {

@@ -5,7 +5,13 @@ run: build
 	./bin/fibonacci
 
 test:
-	go test -v -race ./internal/...
+	go test -v -race ./internal/... ./config/...
+
+docker-build:
+	sudo docker-compose build
+
+docker-up: docker-build
+	sudo docker-compose up
 
 generate:
 	mkdir -p internal/server/grpc/pb

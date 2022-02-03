@@ -9,7 +9,7 @@ message request {
 }
 
 message response {
-  repeated int64 data = 1;
+  repeated string data = 1;
   string err = 2;
 }
 

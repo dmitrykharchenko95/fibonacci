@@ -22,7 +22,7 @@ const (
 	redisHost       = "localhost"
 	redisPort       = "6379"
 	redisExpiration = time.Hour
-	redisMaxErr     = 6
+	redisMaxErr     = 0
 	timeout         = time.Second * 3
 )
 
@@ -69,7 +69,7 @@ func TestServer(t *testing.T) {
 			}
 		}
 
-		expectedResponse.Data = []int64{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55}
+		expectedResponse.Data = []string{"0", "1", "1", "2", "3", "5", "8", "13", "21", "34", "55"}
 
 		err = json.Unmarshal(resBody, &actualResponse)
 		require.NoError(t, err)
@@ -91,7 +91,7 @@ func TestServer(t *testing.T) {
 			}
 		}
 
-		expectedResponse.Data = []int64{-55, 34, -21, 13, -8, 5, -3, 2, -1, 1, 0}
+		expectedResponse.Data = []string{"-55", "34", "-21", "13", "-8", "5", "-3", "2", "-1", "1", "0"}
 
 		err = json.Unmarshal(resBody, &actualResponse)
 		require.NoError(t, err)
@@ -113,7 +113,7 @@ func TestServer(t *testing.T) {
 			}
 		}
 
-		expectedResponse.Data = []int64{5, -3, 2, -1, 1, 0, 1, 1, 2, 3, 5}
+		expectedResponse.Data = []string{"5", "-3", "2", "-1", "1", "0", "1", "1", "2", "3", "5"}
 
 		err = json.Unmarshal(resBody, &actualResponse)
 		require.NoError(t, err)
@@ -135,7 +135,7 @@ func TestServer(t *testing.T) {
 			}
 		}
 
-		expectedResponse.Data = []int64{1}
+		expectedResponse.Data = []string{"1"}
 
 		err = json.Unmarshal(resBody, &actualResponse)
 		require.NoError(t, err)
@@ -158,7 +158,7 @@ func TestServer(t *testing.T) {
 		}
 
 		expectedResponse = Response{
-			Data: []int64{},
+			Data: []string{},
 			Err:  ErrWrongArgs.Error(),
 		}
 
@@ -182,7 +182,7 @@ func TestServer(t *testing.T) {
 			}
 		}
 		expectedResponse = Response{
-			Data: []int64{},
+			Data: []string{},
 			Err:  "strconv.Atoi: parsing \"test\": invalid syntax",
 		}
 
@@ -193,7 +193,7 @@ func TestServer(t *testing.T) {
 	})
 
 	t.Run("timeout exit", func(t *testing.T) {
-		cmd := exec.Command("curl", "-X", "GET", "-i", "localhost:8080/", `-d`, "1000000,1000000")
+		cmd := exec.Command("curl", "-X", "GET", "-i", "localhost:8080/", `-d`, "100000000,100000000")
 
 		cmd.Stdout = buf
 
@@ -212,7 +212,7 @@ func TestServer(t *testing.T) {
 		}
 
 		expectedResponse = Response{
-			Data: []int64{},
+			Data: []string{},
 			Err:  "timeout exit: returned 0 values from 1",
 		}
 

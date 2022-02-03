@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
+	"math/big"
 	"net"
 	"reflect"
-	"sync"
 	"testing"
 	"time"
 
@@ -19,75 +19,69 @@ var rdb = &rds.Client{
 		DB:       0,
 	}),
 	Expiration: time.Hour,
-	MaxErrors:  6,
+	MaxErrors:  0,
 }
 
 func Test_fibonacci(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		n      int
+		n      *big.Int
 		stopCh chan struct{}
-		once   *sync.Once
 	}
 	tests := []struct {
 		name string
 		args args
-		want int
+		want string
 	}{
 		{
 			name: "0",
 			args: args{
 				ctx:    context.Background(),
-				n:      0,
+				n:      big.NewInt(0),
 				stopCh: make(chan struct{}),
-				once:   &sync.Once{},
 			},
-			want: 0,
+			want: "0",
 		},
 		{
 			name: "1",
 			args: args{
 				ctx:    context.Background(),
-				n:      1,
+				n:      big.NewInt(1),
 				stopCh: make(chan struct{}),
-				once:   &sync.Once{},
 			},
-			want: 1,
+			want: "1",
 		},
 		{
 			name: "-1",
 			args: args{
 				ctx:    context.Background(),
-				n:      -1,
+				n:      big.NewInt(-1),
 				stopCh: make(chan struct{}),
-				once:   &sync.Once{},
 			},
-			want: 1,
+			want: "1",
 		},
 		{
 			name: "8",
 			args: args{
 				ctx:    context.Background(),
-				n:      8,
+				n:      big.NewInt(8),
 				stopCh: make(chan struct{}),
-				once:   &sync.Once{},
 			},
-			want: 21,
+			want: "21",
 		},
 		{
 			name: "-8",
 			args: args{
 				ctx:    context.Background(),
-				n:      -8,
+				n:      big.NewInt(-8),
 				stopCh: make(chan struct{}),
-				once:   &sync.Once{},
 			},
-			want: -21,
+			want: "-21",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := fibonacci(tt.args.ctx, tt.args.n, tt.args.stopCh, tt.args.once); got != tt.want {
+			if got := fibonacci(tt.args.ctx, tt.args.n, tt.args.stopCh); got.Text(10) != tt.want {
 				t.Errorf("fibonacci() = %v, want %v", got, tt.want)
 			}
 		})
@@ -104,7 +98,7 @@ func Test_getFibonacci(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []int
+		want    []string
 		wantErr bool
 	}{
 		{
@@ -114,7 +108,7 @@ func Test_getFibonacci(t *testing.T) {
 				y:       10,
 				timeout: time.Second * 3,
 			},
-			want:    []int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55},
+			want:    []string{"0", "1", "1", "2", "3", "5", "8", "13", "21", "34", "55"},
 			wantErr: false,
 		},
 		{
@@ -124,7 +118,7 @@ func Test_getFibonacci(t *testing.T) {
 				y:       0,
 				timeout: time.Second * 3,
 			},
-			want:    []int{-55, 34, -21, 13, -8, 5, -3, 2, -1, 1, 0},
+			want:    []string{"-55", "34", "-21", "13", "-8", "5", "-3", "2", "-1", "1", "0"},
 			wantErr: false,
 		},
 		{
@@ -134,7 +128,7 @@ func Test_getFibonacci(t *testing.T) {
 				y:       5,
 				timeout: time.Second * 3,
 			},
-			want:    []int{5, -3, 2, -1, 1, 0, 1, 1, 2, 3, 5},
+			want:    []string{"5", "-3", "2", "-1", "1", "0", "1", "1", "2", "3", "5"},
 			wantErr: false,
 		},
 		{
@@ -142,9 +136,9 @@ func Test_getFibonacci(t *testing.T) {
 			args: args{
 				x:       100000,
 				y:       100000,
-				timeout: time.Second * 1,
+				timeout: time.Millisecond * 1,
 			},
-			want:    []int{},
+			want:    []string{},
 			wantErr: true,
 		},
 	}
